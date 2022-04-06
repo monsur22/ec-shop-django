@@ -78,7 +78,18 @@
                 </div>
             </div>
             {% else %}
-            <a href="{% url 'add_cart' single_product.id %}" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+              {% if in_cart %}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="alert alert-success" role="alert">
+                            <strong>Already in Cart!</strong>
+                        </div>
+                    </div>
+                </div>
+              {%else%}
+              <a href="{% url 'add_cart' single_product.id %}" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+              {% endif %}
+
             {% endif %}
 
         </article> <!-- product-info-aside .// -->
