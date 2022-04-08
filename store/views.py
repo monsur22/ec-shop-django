@@ -5,6 +5,7 @@ from store.models import Product
 from category.models import Category
 from carts.views import _cart_id
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 def store(request, category_slug = None):
     categories = None
@@ -19,7 +20,7 @@ def store(request, category_slug = None):
         productCount = products.count()
 
     else:
-        products = Product.objects.all().filter(is_available = True)
+        products = Product.objects.all().filter(is_available = True).order_by('id')
         paginator = Paginator(products, 2)
         page = request.GET.get('page')
         paged_products = paginator.get_page(page)
@@ -45,3 +46,26 @@ def product_details(request, category_slug, product_slug):
         'in_cart':in_cart,
     }
     return render(request, 'store/product_detail.html', context)
+
+
+def search(request):
+    # return HttpResponse('search')
+    # return render(request, 'store/store.html')
+    query = request.GET.get('keyword')
+    if query:
+        products = Product.objects.filter(is_available = True).order_by('id')
+        products = products.filter(Q(description__icontains=query) | Q(product_name__icontains=query) )
+        paginator = Paginator(products, 2)
+        page = request.GET.get('page')
+        paged_products = paginator.get_page(page)
+
+        productCount = products.count()
+    else:
+        products = None
+        productCount = None
+    context = {
+        'products':products,
+        'productCount':productCount,
+        # 'paged_products':paged_products,
+    }
+    return render(request, 'store/store.html', context)
